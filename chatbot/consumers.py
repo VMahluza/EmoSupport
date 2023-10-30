@@ -6,18 +6,18 @@ from channels.generic.websocket import WebsocketConsumer
 # from chatbot.chat import get_chatbot_message
 from dotenv import load_dotenv
 load_dotenv()
-openai.api_key = "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"
-def get_chatbot_message(message):
-    completion = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "As a compassionate mental health companion, my purpose is to provide guidance and solace to those experiencing emotional breakdowns. My responses are crafted to be succinct, yet filled with empathy, aiming to offer prompt support during challenging moments. i will keep responses short and simple"},
-            {"role": "user", "content": message}
-        ]
-    )
+openai.api_key = "Your Api Key Goes here!"
+# def get_chatbot_message(message):
+#     completion = openai.ChatCompletion.create(
+#         model="gpt-3.5-turbo",
+#         messages=[
+#             {"role": "system", "content": "As a compassionate mental health companion, my purpose is to provide guidance and solace to those experiencing emotional breakdowns. My responses are crafted to be succinct, yet filled with empathy, aiming to offer prompt support during challenging moments. i will keep responses short and simple"},
+#             {"role": "user", "content": message}
+#         ]
+#     )
 
-    print(completion)
-    return completion.choices[0].message['content']
+#     print(completion)
+#     return completion.choices[0].message['content']
 
 
 def find_doctor_mention(text):
@@ -28,12 +28,12 @@ def find_doctor_mention(text):
     else:
       return False
 
-# def get_chatbot_message(message):
-#     contact_dr = find_doctor_mention(message)
-#     if contact_dr:
-#         return "contact nearby DR"
-#     else:
-#        return "Let's Chat"
+def get_chatbot_message(message):
+    contact_dr = find_doctor_mention(message)
+    if contact_dr:
+        return "contact nearby DR"
+    else:
+       return "Let's Chat"
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
