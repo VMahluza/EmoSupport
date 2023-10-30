@@ -1,0 +1,71 @@
+{% extends "globals/base.html" %}
+{% block content %}
+{% include "partials/topnav.html" %}
+<!--
+  Welcome to Tailwind Play, the official Tailwind CSS playground!
+
+  Everything here works just like it does when you're running Tailwind locally
+  with a real build pipeline. You can customize your config file, use features
+  like `@apply`, or even add third-party plugins.
+
+  Feel free to play with this example if you're just learning, or trash it and
+  start from scratch if you know enough to be dangerous. Have fun!
+-->
+<div class="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gray-50 py-6 sm:py-12">
+    <img src="/img/beams.jpg" alt="" class="absolute top-1/2 left-1/2 max-w-none -translate-x-1/2 -translate-y-1/2" width="1308" />
+    <div class="absolute inset-0 bg-[url(/img/grid.svg)] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
+    <div class="relative bg-white px-6 pt-10 pb-8 shadow-xl ring-1 ring-gray-900/5 sm:mx-auto sm:max-w-lg sm:rounded-lg sm:px-10">
+      <div class="mx-auto max-w-md">
+          <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-6xl">{% if request.user %}{{request.user.get_full_name}}, Scan Your Finger<br>To Proceed{% endif %}</h1>
+        
+        <div class="divide-y divide-gray-300/50">
+          <div class="space-y-6 py-8 text-base leading-7 text-gray-600">
+            <style>
+                .loader {
+                    width: 44.8px;
+                    height: 44.8px;
+                    color: #554cb5;
+                    position: relative;
+                    background: radial-gradient(11.2px,currentColor 94%,#0000);
+                  }
+                  
+                  .loader:before {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    border-radius: 50%;
+                    background: radial-gradient(10.08px at bottom right,#0000 94%,currentColor) top    left,
+                            radial-gradient(10.08px at bottom left ,#0000 94%,currentColor) top    right,
+                            radial-gradient(10.08px at top    right,#0000 94%,currentColor) bottom left,
+                            radial-gradient(10.08px at top    left ,#0000 94%,currentColor) bottom right;
+                    background-size: 22.4px 22.4px;
+                    background-repeat: no-repeat;
+                    animation: loader 1.5s infinite cubic-bezier(0.3,1,0,1);
+                  }
+                  
+                  @keyframes loader {
+                    33% {
+                      inset: -11.2px;
+                      transform: rotate(0deg);
+                    }
+                  
+                    66% {
+                      inset: -11.2px;
+                      transform: rotate(90deg);
+                    }
+                  
+                    100% {
+                      inset: 0;
+                      transform: rotate(90deg);
+                    }
+                  }
+            </style>
+          <div class="loader"></div>
+        </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  
+{% endblock content %}

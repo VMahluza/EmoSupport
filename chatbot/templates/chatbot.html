@@ -1,0 +1,256 @@
+<!-- Recent Activity -->
+{% extends "globals/base.html" %}
+{% block content %}
+<!-- component -->
+{% include "partials/topnav.html" %}
+
+<div class="flex h-screen antialiased text-gray-800">
+    <div class="flex flex-row h-full w-full overflow-x-hidden">
+        {% include "sidebar.html" %}
+        <div class="flex flex-col flex-auto h-full p-6">
+            <div class="flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-full p-4">
+                <div class="flex flex-col h-full overflow-x-auto mb-4">
+                    <div class="flex flex-col h-full">
+                        <style>
+                            .loading {
+                            --speed-of-animation: 0.9s;
+                            --gap: 6px;
+                            --first-color: #4c86f9;
+                            --second-color: #49a84c;
+                            --third-color: #f6027c;
+                            --fourth-color: #f6bb02;
+                            --fifth-color: #2196f3;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            width: 100px;
+                            gap: 6px;
+                            height: 100px;
+                            }
+
+                            .loading span {
+                            width: 2px;
+                            height: 20px;
+                            background: var(--first-color);
+                            animation: scale var(--speed-of-animation) ease-in-out infinite;
+                            }
+
+                            .loading span:nth-child(2) {
+                            background: var(--second-color);
+                            animation-delay: -0.8s;
+                            }
+
+                            .loading span:nth-child(3) {
+                            background: var(--third-color);
+                            animation-delay: -0.7s;
+                            }
+
+                            .loading span:nth-child(4) {
+                            background: var(--fourth-color);
+                            animation-delay: -0.6s;
+                            }
+
+                            .loading span:nth-child(5) {
+                            background: var(--fifth-color);
+                            animation-delay: -0.5s;
+                            }
+
+                            @keyframes scale {
+                            0%, 40%, 100% {
+                            transform: scaleY(0.05);
+                            }
+
+                            20% {
+                            transform: scaleY(1);
+                            }
+                            }
+                        </style>
+                        <div id="load_ani">
+                            <div class="flex items-center justify-start flex-row-reverse">
+                                <div class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
+                                    <i class="fa fa-microphone" aria-hidden="true"></i>
+                                </div>
+                                <div class="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl">
+                                  <div>
+                                    <div   class="loading">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                        </div>
+ 
+                        <div id="mic_ev">
+               
+                        </div>
+                        <div class="grid grid-cols-12 gap-y-2" id="chat-area">
+                            {% comment %} All Convo Goes  {% endcomment %}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4">
+                    <div>
+                        <button id="toggleRecording" class="flex items-center  justify-center text-gray-500 hover:text-gray-600" ><i class="fa fa-microphone" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="flex-grow ml-4">
+                        <div class="relative w-full">
+                            <input type="text" id="chat-message-input" class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"/>
+                            <button class="absolute flex items-center justify-center h-full w-12 right-0 top-0 text-gray-400 hover:text-gray-600">{% include "svg2.html" %}</button>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <button id="chat-message-submit" class="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0">
+                            <span>Send</span>
+                                {% include "svg3.html" %}
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{ room_name|json_script:"room-name" }}
+<!-- To be removed -->
+<script>
+    const inputField = document.getElementById('chat-message-input');
+    const toggleButton = document.getElementById('toggleRecording');
+    const outputText = document.getElementById('mic_ev');
+    const icon = toggleButton.firstChild
+    const load_ani = document.getElementById('load_ani');
+    load_ani.style.display = 'none';
+
+    let isRecording = false;
+    let recognition;
+
+    const startRecording = () => {
+
+        icon.style.color = 'red';
+        load_ani.style.display = 'block';
+        console.log(load_ani);
+
+        isRecording = true;
+        recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.start();
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            inputField.value = transcript;
+
+            // ... Your response logic here ...
+        }
+
+        recognition.onend = function() {
+            if (isRecording) {
+                recognition.start();
+            }
+        }
+    };
+
+    toggleButton.addEventListener('click', function() {
+        if (isRecording) {
+            isRecording = false;
+            load_ani.style.display = 'none';
+            recognition.stop();
+            icon.style.color = 'green';
+        } else {
+            load_ani.style.display = 'block';
+            startRecording();
+        }
+    });
+</script>
+  <!-- To be deleted -->
+<script>
+    const roomName = JSON.parse(document.getElementById('room-name').textContent);
+    const chatSocket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/chat/'
+        + "roomName"
+        + '/'
+    );
+
+    console.log('ws://'
+    + window.location.host
+    + '/ws/chat/'
+    + roomName
+    + '/')
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        // console.log(data + 'On message')
+        document.querySelector('#chat-area').innerHTML += `
+            <div class="col-start-1 col-end-8 p-3 rounded-lg">
+                <div class="flex flex-row items-center">
+                <div class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
+                    <div class="flex items-center justify-center rounded-2xl text-indigo-700 bg-indigo-100 h-10 w-10">
+                  {% include "svg4.html" %}
+              </div>
+                </div>
+                <div class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl">
+                    <div>${data.response}</div>
+                </div>
+                </div>
+            </div>
+        `;
+
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    document.querySelector('#chat-message-input').focus();
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+        if (e.key === 'Enter') {  // enter, return
+            document.querySelector('#chat-message-submit').click();
+        }
+    };
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+
+        const messageInputDom = document.querySelector('#chat-message-input');
+        const message = messageInputDom.value;
+        if (isRecording) {
+            isRecording = false;
+            load_ani.style.display = 'none';
+            recognition.stop();
+            icon.style.color = 'green';
+        }
+    // Create a new chat message element
+    const chatMessage = document.createElement('div');
+    chatMessage.classList.add('col-start-6');
+    chatMessage.classList.add('col-end-13');
+    chatMessage.classList.add('p-3');
+    chatMessage.classList.add('rounded-lg');
+    
+  chatMessage.innerHTML = `
+    <div class="flex items-center justify-start flex-row-reverse">
+      <div class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
+        A
+      </div>
+      <div class="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl">
+        <div>${message}</div>
+      </div>
+    </div>
+  `;
+  // Append the new chat message to the chat area
+  const chatArea = document.querySelector('#chat-area');
+  chatArea.appendChild(chatMessage);
+   // Scroll to the bottom of the chat area
+   chatArea.scrollTop = chatArea.scrollHeight;
+// Send the chat message via WebSocket
+chatSocket.send(JSON.stringify({
+  'message': message
+}));
+// Clear the input field
+messageInputDom.value = '';
+};
+</script>
+{% endblock %}
