@@ -6,7 +6,7 @@ from channels.generic.websocket import WebsocketConsumer
 # from chatbot.chat import get_chatbot_message
 from dotenv import load_dotenv
 load_dotenv()
-openai.api_key = "Your Api Key Goes here!"
+openai.api_key = os.getenv("OPENAI_API_KEY")
 # def get_chatbot_message(message):
 #     completion = openai.ChatCompletion.create(
 #         model="gpt-3.5-turbo",
